@@ -161,6 +161,7 @@ Animations: 1s ease-in-out
 ```
 
 ### **Login/Register**
+{% raw %}
 ```css
 .login-section {
     background: linear-gradient(135deg, rgba(76, 175, 80, 0.85) 0%, rgba(56, 142, 60, 0.8) 100%), 
@@ -172,6 +173,7 @@ Animations: 1s ease-in-out
     justify-content: center;
 }
 ```
+{% endraw %}
 
 ---
 
@@ -323,6 +325,7 @@ User:         fas fa-user
 
 ## Navigation Bar
 
+{% raw %}
 ```html
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
@@ -342,6 +345,7 @@ User:         fas fa-user
     </div>
 </nav>
 ```
+{% endraw %}
 
 ---
 
@@ -388,6 +392,7 @@ User:         fas fa-user
 ## Quick Copy-Paste Code Snippets
 
 ### **New Section Header**
+{% raw %}
 ```html
 <div class="section-header" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.85) 0%, rgba(56, 142, 60, 0.8) 100%), url('{{ url_for(\"static\", filename=\"images/a.jpg\") }}') center/cover no-repeat; background-attachment: fixed; padding: 40px 0; color: white;">
     <div class="container">
@@ -396,6 +401,7 @@ User:         fas fa-user
     </div>
 </div>
 ```
+{% endraw %}
 
 ### **Feature Card**
 ```html

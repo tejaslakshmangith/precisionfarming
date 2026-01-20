@@ -9,18 +9,22 @@ When a logged-in user clicked the AgriSmart logo, they were redirected to the lo
 Updated the navbar logo link in `base.html` to check user authentication:
 
 **Before:**
+{% raw %}
 ```html
 <a class="navbar-brand" href="{{ url_for('index') }}">
     <i class="fas fa-leaf"></i> AgriSmart
 </a>
 ```
+{% endraw %}
 
 **After:**
+{% raw %}
 ```html
 <a class="navbar-brand" href="{% if current_user.is_authenticated %}{{ url_for('dashboard') }}{% else %}{{ url_for('index') }}{% endif %}">
     <i class="fas fa-leaf"></i> AgriSmart
 </a>
 ```
+{% endraw %}
 
 ### **How It Works**
 - ✅ **Logged-in users**: Clicking logo → goes to Dashboard
