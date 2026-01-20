@@ -184,7 +184,10 @@ class FertilizerCropClassifier:
             self.label_encoder.classes_ = payload['classes']
             self.crop_stats = payload.get('crop_stats', {})
         else:
-            self.train()
+            if os.path.exists(self.data_path):
+                self._train_from_dataset()
+            else:
+                self._train_synthetic()
 
     def _prepare_dataframe(self):
         if not os.path.exists(self.data_path):
@@ -200,9 +203,115 @@ class FertilizerCropClassifier:
 
         return df
 
-    def train(self):
+    def _train_from_dataset(self):
         df = self._prepare_dataframe()
 
+    def _train_from_dataset(self):
+        df = self._prepare_dataframe()
+
+        X = df[self.feature_columns].astype(float)
+        y = df['Crop']
+        y_encoded = self.label_encoder.fit_transform(y)
+
+        self.model = xgb.XGBClassifier(
+            n_estimators=300,
+            max_depth=4,
+            learning_rate=0.08,
+            subsample=0.9,
+            colsample_bytree=0.9,
+            objective='multi:softprob',
+            num_class=len(self.label_encoder.classes_),
+            random_state=42,
+        )
+        self.model.fit(X, y_encoded)
+
+        grouped = df.groupby('Crop')[self.feature_columns].mean().round(2)
+        self.crop_stats = grouped.to_dict(orient='index')
+
+        os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
+        joblib.dump(
+            {
+                'model': self.model,
+                'classes': self.label_encoder.classes_,
+                'crop_stats': self.crop_stats,
+            },
+            self.model_path,
+        )
+
+    def _train_synthetic(self):
+        """Generate synthetic fertilizer data for training when CSV is not available."""
+        np.random.seed(42)
+        
+        # Define crop types matching the crop predictor
+        crops = [
+            'rice', 'wheat', 'maize', 'chickpea', 'kidneybeans', 'pigeonpeas',
+            'mothbeans', 'mungbean', 'blackgram', 'lentil', 'pomegranate',
+            'banana', 'mango', 'grapes', 'watermelon', 'muskmelon', 'apple',
+            'orange', 'papaya', 'coconut', 'cotton', 'jute', 'coffee'
+        ]
+        
+        # Generate synthetic data for each crop type
+        n_samples_per_crop = 100
+        data = []
+        
+        for crop in crops:
+            # Generate realistic NPK values and soil parameters for each crop
+            # These are approximate typical ranges
+            if crop in ['rice', 'wheat', 'maize', 'sugarcane']:
+                # High N requirement cereals
+                N = np.random.uniform(80, 120, n_samples_per_crop)
+                P = np.random.uniform(30, 60, n_samples_per_crop)
+                K = np.random.uniform(30, 60, n_samples_per_crop)
+                pH = np.random.uniform(5.5, 7.5, n_samples_per_crop)
+                soil_moisture = np.random.uniform(60, 85, n_samples_per_crop)
+            elif crop in ['cotton', 'jute']:
+                # Fiber crops
+                N = np.random.uniform(60, 100, n_samples_per_crop)
+                P = np.random.uniform(30, 50, n_samples_per_crop)
+                K = np.random.uniform(40, 70, n_samples_per_crop)
+                pH = np.random.uniform(6.0, 7.5, n_samples_per_crop)
+                soil_moisture = np.random.uniform(50, 75, n_samples_per_crop)
+            elif crop in ['banana', 'mango', 'coconut', 'pomegranate']:
+                # Fruit trees - high K requirement
+                N = np.random.uniform(50, 90, n_samples_per_crop)
+                P = np.random.uniform(25, 50, n_samples_per_crop)
+                K = np.random.uniform(60, 100, n_samples_per_crop)
+                pH = np.random.uniform(5.5, 7.0, n_samples_per_crop)
+                soil_moisture = np.random.uniform(55, 80, n_samples_per_crop)
+            elif crop in ['grapes', 'watermelon', 'muskmelon', 'orange', 'papaya', 'apple']:
+                # Other fruits
+                N = np.random.uniform(40, 80, n_samples_per_crop)
+                P = np.random.uniform(20, 50, n_samples_per_crop)
+                K = np.random.uniform(50, 90, n_samples_per_crop)
+                pH = np.random.uniform(5.5, 7.5, n_samples_per_crop)
+                soil_moisture = np.random.uniform(50, 80, n_samples_per_crop)
+            elif crop in ['chickpea', 'pigeonpeas', 'mothbeans', 'mungbean', 'blackgram', 'lentil']:
+                # Legumes - lower N requirement (nitrogen fixing)
+                N = np.random.uniform(20, 50, n_samples_per_crop)
+                P = np.random.uniform(30, 60, n_samples_per_crop)
+                K = np.random.uniform(20, 50, n_samples_per_crop)
+                pH = np.random.uniform(6.0, 8.0, n_samples_per_crop)
+                soil_moisture = np.random.uniform(45, 70, n_samples_per_crop)
+            else:
+                # Default for other crops
+                N = np.random.uniform(40, 80, n_samples_per_crop)
+                P = np.random.uniform(25, 55, n_samples_per_crop)
+                K = np.random.uniform(30, 60, n_samples_per_crop)
+                pH = np.random.uniform(5.5, 7.5, n_samples_per_crop)
+                soil_moisture = np.random.uniform(50, 75, n_samples_per_crop)
+            
+            for i in range(n_samples_per_crop):
+                data.append({
+                    'Crop': crop,
+                    'N': N[i],
+                    'P': P[i],
+                    'K': K[i],
+                    'pH': pH[i],
+                    'soil_moisture': soil_moisture[i]
+                })
+        
+        df = pd.DataFrame(data)
+        
         X = df[self.feature_columns].astype(float)
         y = df['Crop']
         y_encoded = self.label_encoder.fit_transform(y)

@@ -20,6 +20,12 @@ Before deploying to Render, ensure you have:
 2. **Render Account**: Sign up at [https://render.com](https://render.com)
    - Free tier is sufficient for this application
 3. **Repository Access**: Ensure your repository is public or you've granted Render access to private repositories
+4. **Complete Repository**: The repository must include:
+   - `templates/` directory with all HTML template files (base.html, index.html, login.html, register.html, dashboard.html, crop_prediction.html, fertilizer_recommendation.html, irrigation_scheduling.html)
+   - `static/` directory with CSS and JavaScript files (optional but recommended)
+   - All Python source files (app.py, config.py, models.py, ml_models.py)
+   
+   **Note**: The ML models will be trained using synthetic data on first startup if the `Data/` directory with CSV files is not present. This is handled automatically by the application.
 
 ## Deployment Steps
 
@@ -135,10 +141,20 @@ The application uses SQLite by default, which is suitable for the free tier.
 ### Machine Learning Models
 
 The application includes ML models that are trained/loaded on startup:
-- Models are stored in the `instance/` directory
-- On first run, models will be trained from the dataset
-- Training happens automatically during initialization
-- Subsequent runs will load pre-trained models if available
+- **Crop Predictor**: XGBoost model for crop recommendation based on soil and climate parameters
+- **Fertilizer Recommender**: Recommends fertilizers based on crop type and soil nutrients
+- **Irrigation Scheduler**: Calculates irrigation schedules based on crop and environmental factors
+
+**Model Training Strategy**:
+1. **Pre-trained Models (Preferred)**: If `instance/crop_xgb_model.joblib` and `instance/fertilizer_xgb_model.joblib` exist, they will be loaded directly (fastest startup)
+2. **Training from CSV (Fallback 1)**: If models don't exist but `Data/Crop_recommendation.csv` and `Data/fertilizer.csv` are present, models will be trained from these datasets
+3. **Synthetic Data (Fallback 2)**: If no data files exist, models will automatically train on algorithmically-generated synthetic data based on agricultural best practices
+
+**First Deployment Notes**:
+- On first deployment, models will be trained using synthetic data (takes 30-60 seconds)
+- Models are saved in the `instance/` directory for faster subsequent startups
+- Due to ephemeral storage on free tier, models will be retrained on each service restart/redeploy
+- For faster startups, consider including pre-trained model files in your repository (remove `instance/` from `.gitignore`)
 
 ## Accessing Your Application
 
