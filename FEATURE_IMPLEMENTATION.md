@@ -10,14 +10,14 @@ Updated the navbar logo link in `base.html` to check user authentication:
 
 **Before:**
 ```html
-<a class="navbar-brand" href="{{ url_for('index') }}">
+<a class="navbar-brand" href="{% raw %}{{ url_for('index') }}{% endraw %}">
     <i class="fas fa-leaf"></i> AgriSmart
 </a>
 ```
 
 **After:**
 ```html
-<a class="navbar-brand" href="{% if current_user.is_authenticated %}{{ url_for('dashboard') }}{% else %}{{ url_for('index') }}{% endif %}">
+<a class="navbar-brand" href="{% raw %}{% if current_user.is_authenticated %}{{ url_for('dashboard') }}{% else %}{{ url_for('index') }}{% endif %}{% endraw %}">
     <i class="fas fa-leaf"></i> AgriSmart
 </a>
 ```
