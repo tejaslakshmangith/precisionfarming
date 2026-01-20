@@ -229,7 +229,7 @@ url('../images/image.jpg')
 
 **Path Format in HTML:**
 ```html
-url('{{ url_for("static", filename="images/image.jpg") }}')
+url('{% raw %}{{ url_for("static", filename="images/image.jpg") }}{% endraw %}')
 ```
 
 ---

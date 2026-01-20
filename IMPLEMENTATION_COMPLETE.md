@@ -260,7 +260,7 @@ background: linear-gradient(135deg, rgba(color, 0.85) 0%, rgba(color, 0.8) 100%)
 
 ### **Adding New Pages**
 1. Copy base.html structure
-2. Add page-specific CSS in `{% block extra_css %}`
+2. Add page-specific CSS in `{% raw %}{% block extra_css %}{% endraw %}`
 3. Use background images from static/images folder
 4. Follow color-coding for feature pages
 

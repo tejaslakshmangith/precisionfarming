@@ -164,7 +164,7 @@ Animations: 1s ease-in-out
 ```css
 .login-section {
     background: linear-gradient(135deg, rgba(76, 175, 80, 0.85) 0%, rgba(56, 142, 60, 0.8) 100%), 
-                url('{{ url_for("static", filename="images/3.jpeg") }}') center/cover no-repeat;
+                url('{% raw %}{{ url_for("static", filename="images/3.jpeg") }}{% endraw %}') center/cover no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
     display: flex;
@@ -326,7 +326,7 @@ User:         fas fa-user
 ```html
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">
+        <a class="navbar-brand" href="{% raw %}{{ url_for('index') }}{% endraw %}">
             <i class="fas fa-leaf"></i> AgriSmart
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse">
@@ -389,7 +389,7 @@ User:         fas fa-user
 
 ### **New Section Header**
 ```html
-<div class="section-header" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.85) 0%, rgba(56, 142, 60, 0.8) 100%), url('{{ url_for(\"static\", filename=\"images/a.jpg\") }}') center/cover no-repeat; background-attachment: fixed; padding: 40px 0; color: white;">
+<div class="section-header" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.85) 0%, rgba(56, 142, 60, 0.8) 100%), url('{% raw %}{{ url_for(\"static\", filename=\"images/a.jpg\") }}{% endraw %}') center/cover no-repeat; background-attachment: fixed; padding: 40px 0; color: white;">
     <div class="container">
         <h1 class="mb-0" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">Section Title</h1>
         <p class="text-white-50">Subtitle</p>
