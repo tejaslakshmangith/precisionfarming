@@ -206,9 +206,6 @@ class FertilizerCropClassifier:
     def _train_from_dataset(self):
         df = self._prepare_dataframe()
 
-    def _train_from_dataset(self):
-        df = self._prepare_dataframe()
-
         X = df[self.feature_columns].astype(float)
         y = df['Crop']
         y_encoded = self.label_encoder.fit_transform(y)
